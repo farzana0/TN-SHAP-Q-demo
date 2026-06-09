@@ -1,0 +1,15 @@
+# Core dependencies (notebook 1 needs only these)
+qiskit>=1.0
+numpy
+scipy
+scikit-learn
+matplotlib
+
+# To run the notebooks headless / regenerate outputs
+jupyter
+nbconvert
+nbformat
+
+# Notebook 2 additionally requires a clone of the reference toolbox:
+#   git clone https://github.com/RaoulHeese/qshaptools.git
+# (set QSHAPTOOLS_PATH if it is not at ./qshaptools/src/qshaptools)

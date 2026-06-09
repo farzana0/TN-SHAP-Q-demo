@@ -1,0 +1,15 @@
+# The reference toolbox (clone separately for notebook 2)
+qshaptools/
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Environments
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
