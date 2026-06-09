@@ -156,7 +156,7 @@ This demo reproduces / builds directly on:
 
 ---
 
-## Headline takeaways
+## Summary
 
 - **Accuracy:** TN-SHAP-Q is **exact** — it reproduces exact coalition-enumeration Shapley values (and
   the `qshaptools` exact gate Shapley) to machine precision ($\sim10^{-15}$–$10^{-16}$), for both
@@ -166,12 +166,4 @@ This demo reproduces / builds directly on:
   exponentially more as circuits grow). Sampling estimators need far more queries to merely approach
   this accuracy.
 
-### Honest caveat
-TN-SHAP-Q's "evaluations" are **extension evaluations** — interior values of the multilinear extension
-(mixed lifted states for features; per-gate mixed-unitary channels for gates). In simulation these are
-computed directly; on hardware they are estimated by randomized coalition masking (a factor $R$ more
-ordinary masked-circuit shots, $\mathrm{MAE}\propto R^{-1/2}$). Q-LIME's and `qshaptools`'s counts are
-ordinary masked-circuit evaluations. The query reduction therefore reflects **exploiting the
-multilinear structure of the game**, not a generic shot-count speedup — and the identical-query-type
-control in notebook 1 shows TN-SHAP-Q still wins on accuracy even when restricted to ordinary queries,
-because Q-LIME is biased.
+
