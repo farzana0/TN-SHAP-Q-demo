@@ -50,24 +50,31 @@ The committed notebooks already contain executed outputs and figures. (Developed
 **Steps:** (1) define a single-$R_Y$ QNN; (2) train it on Iris (setosa vs versicolor, 4 features
 scaled to $[0,\pi]$), pick a dataset-mean baseline and a few instances; (3) compute the **exact**
 feature Shapley values by enumerating all $2^d$ masked coalitions; (4) compute **TN-SHAP-Q** Shapley
-values by the Owen integral; (5) compute **Q-LIME** by fitting a kernel-weighted linear surrogate to
-sampled feature masks; (6) compare attributions and accuracy vs. evaluation count.
+values by the Owen integral and check them against exact enumeration; (5) compute **Q-LIME** by
+fitting a kernel-weighted linear surrogate to sampled feature masks; (6) compare the two methods.
+
+**Q-LIME does not compute Shapley values** — it returns local-linear coefficients on a different
+scale, so an MAE against the exact Shapley value is not a meaningful yardstick. We therefore validate
+**TN-SHAP-Q** against exact enumeration (a Shapley-vs-Shapley check), and compare **Q-LIME** to
+TN-SHAP-Q only on the **feature ranking** it induces.
 
 **Results** (representative run, $d{=}4$, train accuracy ≈ 0.98):
 
-| method | MAE vs exact | cosine | Spearman | evaluations |
-|---|---|---|---|---|
-| **TN-SHAP-Q (Owen, $M{=}2$)** | **5 × 10⁻¹⁷** | **1.000** | **1.00** | $2dM = 16$ |
-| Q-LIME (256 perturbations) | 2.8 × 10⁻² | 0.99 | 1.00 | 256 |
-| exact enumeration (reference) | — | — | — | $2^4 = 16$ |
+| method | compared with | metric | evaluations |
+|---|---|---|---|
+| **TN-SHAP-Q (Owen, $M{=}2$)** | exact enumeration | **MAE 5 × 10⁻¹⁷, cosine 1.000** | $2dM = 16$ |
+| TN-SHAP-Q (Owen, $M{=}1$) | exact enumeration | MAE 1.8 × 10⁻³ (below threshold) | $2d = 8$ |
+| Q-LIME (256 perturbations) | TN-SHAP-Q ranking | Spearman 0.80, Kendall 0.75, top-1 0.75 | 256 |
 
-- **Exactness threshold:** Owen with $M{=}1$ is inexact (MAE $1.8\times10^{-3}$); $M{=}2=\lceil d/2\rceil$
+- **TN-SHAP-Q is exact:** Owen with $M{=}1$ is inexact (MAE $1.8\times10^{-3}$); $M{=}2=\lceil d/2\rceil$
   reaches machine precision — exactly as the theory predicts.
-- **Q-LIME has a bias floor:** its MAE **plateaus at ≈ 5 × 10⁻²** regardless of how many perturbations
-  it draws (16 → 512). A local *linear* model cannot represent the exact Shapley value; it gives a good
-  *ranking* (Spearman 1.0) but biased magnitudes.
+- **Q-LIME ranks features only approximately:** its rank agreement with TN-SHAP-Q **saturates below 1**
+  (Spearman ≈ 0.80, top-1 ≈ 0.75) regardless of how many perturbations it draws (16 → 512) — a
+  local-linear *ranking* bias, not a sampling artifact. (Comparing Q-LIME *magnitudes* to Shapley
+  values is ill-posed, so we report ranking only.)
 
-Figures: `feature_importance_bars.pdf`, `qlime_vs_tnshapq_query_efficiency.pdf`.
+Figures: `feature_importance_bars.pdf` (exact vs TN-SHAP-Q), `qlime_vs_tnshapq_ranking.pdf` (Q-LIME
+ranking agreement vs budget), `feature_attribution.pdf` (combined two-panel).
 
 ---
 
@@ -135,10 +142,13 @@ at `./qshaptools/src/qshaptools`.
 
 - **Accuracy:** TN-SHAP-Q is **exact** — it reproduces exact coalition-enumeration Shapley values (and
   the `qshaptools` exact gate Shapley) to machine precision ($\sim10^{-15}$–$10^{-16}$), for both
-  feature and gate players. Q-LIME is a good ranker but carries a local-linear bias floor.
+  feature and gate players. Q-LIME does not compute Shapley values; on the feature **ranking** it
+  agrees with TN-SHAP-Q only approximately (Spearman ≈ 0.80), and more perturbations do not close the
+  gap.
 - **Efficiency:** the Owen route is exact at $2PM$ evaluations with $M=\lceil P/2\rceil$ — polynomial
   in the number of players — versus $2^P$ for enumeration (≈ 45× fewer on the 13-gate QAOA example, and
   exponentially more as circuits grow).
 
 *Caveat:* TN-SHAP-Q evaluates the multilinear extension, while SVQX / Q-LIME evaluate ordinary masked
-circuits; we compare Shapley outputs and value-evaluation counts.
+circuits; we compare Shapley exactness (vs. enumeration), feature ranking (Q-LIME), and
+value-evaluation counts (SVQX).
