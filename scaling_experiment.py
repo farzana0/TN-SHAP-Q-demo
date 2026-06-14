@@ -12,10 +12,11 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Styling consistent with the other demo figures
+# Styling consistent with the other demo figures. Short, wide aspect with larger
+# fonts so the figure stays readable when scaled down to a half-column in the paper.
 plt.rcParams.update({
-    "font.size": 11, "axes.titlesize": 11, "axes.labelsize": 11,
-    "xtick.labelsize": 10, "ytick.labelsize": 10, "legend.fontsize": 9.5,
+    "font.size": 13, "axes.titlesize": 13, "axes.labelsize": 13,
+    "xtick.labelsize": 11.5, "ytick.labelsize": 11.5, "legend.fontsize": 11.5,
 })
 BLUE, RED = "#3b6fb0", "#c0392b"
 
@@ -40,26 +41,24 @@ M_STAR = 13
 tn_star, en_star = tnshapq_cost(M_STAR), enum_cost(M_STAR)
 assert (tn_star, en_star) == (182, 8192), (tn_star, en_star)
 
-fig, ax = plt.subplots(figsize=(5.2, 3.6))
+fig, ax = plt.subplots(figsize=(6.6, 2.7))
 ax.semilogy(M_GRID, en, "s-", color=RED, label=r"Exact enum. $O(2^m)$")
 ax.semilogy(M_GRID, tn, "o-", color=BLUE, label=r"TN-SHAP-Q $O(m^2)$")
 
-# m = 13 QAOA example: vertical marker + actual values
+# m = 13 QAOA example: vertical marker + actual values (the dashed line is
+# explained in the LaTeX caption, so no in-figure label is needed)
 ax.axvline(M_STAR, ls="--", color="0.5", lw=1.0)
-ax.text(M_STAR + 0.15, en[0] * 1.5, "QAOA example", rotation=90,
-        va="bottom", ha="left", color="0.4", fontsize=9)
-ax.scatter([M_STAR], [en_star], marker="*", s=220, color=RED, zorder=6,
+ax.scatter([M_STAR], [en_star], marker="*", s=180, color=RED, zorder=6,
            edgecolor="white", linewidth=0.5)
-ax.scatter([M_STAR], [tn_star], marker="*", s=220, color=BLUE, zorder=6,
+ax.scatter([M_STAR], [tn_star], marker="*", s=180, color=BLUE, zorder=6,
            edgecolor="white", linewidth=0.5)
 ax.annotate(f"{en_star}", (M_STAR, en_star), textcoords="offset points",
-            xytext=(6, 4), color=RED, fontsize=9)
+            xytext=(-5, 9), ha="right", color=RED, fontsize=11)
 ax.annotate(f"{tn_star}", (M_STAR, tn_star), textcoords="offset points",
-            xytext=(6, -12), color=BLUE, fontsize=9)
+            xytext=(-5, 9), ha="right", color=BLUE, fontsize=11)
 
 ax.set_xlabel("number of gate players $m$")
 ax.set_ylabel("evaluations required")
-ax.set_title("Exact gate Shapley: cost vs circuit size")
 ax.set_xticks(M_GRID)
 ax.grid(alpha=0.3, which="both")
 ax.legend(frameon=False, loc="upper left")
