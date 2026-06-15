@@ -1,0 +1,22 @@
+{
+  "M": 2,
+  "d": 4,
+  "dominant_pair": [
+    2,
+    3
+  ],
+  "dominant_value": 0.11871528278974272,
+  "enum_evals": 16,
+  "evals_per_pair": 8,
+  "mae": 9.780904288323173e-17,
+  "mae_M1": 2.6188270077731683e-06,
+  "mae_by_M": {
+    "1": 2.6188270077731683e-06,
+    "2": 9.780904288323173e-17,
+    "3": 9.324822486015049e-17
+  },
+  "n_pairs": 6,
+  "task": "feature order-2 interactions (Iris d=4)",
+  "threshold_M": 2,
+  "threshold_ok": true
+}
