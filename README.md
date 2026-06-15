@@ -20,10 +20,11 @@ players, using $2PM$ evaluations of the extension — versus $2^P$ for exact coa
 | [`qlime_vs_tnshapq_features.ipynb`](qlime_vs_tnshapq_features.ipynb) | **input features** | **Q-LIME** (local linear surrogate) | none |
 | [`tnshapq_vs_qshaptools_gates.ipynb`](tnshapq_vs_qshaptools_gates.ipynb) | **circuit gates** | **SVQX** (Heese et al.'s `qshaptools`) | a `qshaptools` clone |
 | [`notebooks/interaction_experiment.ipynb`](notebooks/interaction_experiment.ipynb) | **feature pairs** (order-2) | **exact $2^d$ enumeration** (Grabisch–Roubens) | none |
+| [`notebooks/gate_interaction_experiment.ipynb`](notebooks/gate_interaction_experiment.ipynb) | **gate pairs** (order-2) | **exact $2^m$ enumeration** (Grabisch–Roubens) | none |
 
 Each notebook inlines a compact QNN / gate game, exact $2^P$ enumeration (ground truth), and the Owen
-route, so notebook 1 is fully self-contained and notebook 2 needs only the external `qshaptools`
-clone it compares against.
+route, so all but the gate-vs-SVQX comparison are fully self-contained; notebook 2 alone needs the
+external `qshaptools` clone it compares against.
 
 ---
 
@@ -42,6 +43,9 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/interaction_experi
 # Notebook 2 (gate importance) — clone the reference toolbox first:
 git clone https://github.com/RaoulHeese/qshaptools.git
 jupyter nbconvert --to notebook --execute --inplace tnshapq_vs_qshaptools_gates.ipynb
+
+# Notebook 4 (order-2 gate interactions) — no external deps:
+jupyter nbconvert --to notebook --execute --inplace notebooks/gate_interaction_experiment.ipynb
 ```
 
 The committed notebooks already contain executed outputs and figures. (Developed against Qiskit
@@ -141,6 +145,32 @@ only the deprecated circuit glue (`extract_from_circuit`/`build_circuit`) plus a
 computing the identical $\langle H\rangle$. To run their package completely unmodified, use a separate
 environment pinned to their original Qiskit version. Point `QSHAPTOOLS_PATH` at your clone if it is not
 at `./qshaptools/src/qshaptools`.
+
+---
+
+## Notebook 4 — order-2 gate interactions: TN-SHAP-Q vs exact enumeration
+
+Extends notebook 2 from first-order gate Shapley values to **pairwise (order-2) gate interaction
+indices**, reusing the **identical gate game** (the same QAOA circuit for $H=Z_0Z_1+2Z_0-3Z_2$
+decomposed to $m{=}13$ gate players, the same observable and $|0\rangle$ input, and the same
+channel-mixture extension $F_g$). No `qshaptools` clone is needed here — only the circuit. The
+interaction index $I(\{i,j\})=\int_0^1\partial_i\partial_j F_g(t\mathbf 1)\,dt$ is computed two ways:
+
+- **TN-SHAP-Q (Owen):** the mixed second difference $F_g(1,1,\cdot)-F_g(1,0,\cdot)-F_g(0,1,\cdot)+F_g(0,0,\cdot)$
+  integrated by $M=\lceil(m-1)/2\rceil=6$-node Gauss–Legendre — $24$ $F_g$-evaluations per pair.
+- **Exact enumeration:** Harsanyi dividends $a_T$ from the full $2^m$ game, then
+  $I(\{i,j\})=\sum_{T\supseteq\{i,j\}}a_T/(|T|-1)$ (Grabisch–Roubens).
+
+All $\binom{13}{2}=78$ indices agree to **max $\sim3\times10^{-15}$** (MAE $\sim4\times10^{-16}$) at
+**$1872$ $F_g$-evaluations vs. $2^m=8192$** to build the game — a genuine query win at this $m$. The
+notebook then reads off the **circuit structure**: single- and double-layer ablations leave
+$\langle H\rangle\approx0$ (the energy is realised only by the full init$\times$cost$\times$mixer
+combination, i.e. interaction-dominated); the strongest couplings sit on the two CX gates implementing
+the dominant $-3$ Hamiltonian term; and one of those CX gates has a small first-order Shapley value but
+the largest total interaction $\sum_j|I_{ij}|$ — *important only in combination*.
+
+Figure: `gate_interactions.pdf` ($|I(\{i,j\})|$ heatmap ordered by layer/qubit, and per-gate
+$|\phi_i|$ vs. $\sum_j|I_{ij}|$) — the paper's gate-interaction figure.
 
 ---
 
