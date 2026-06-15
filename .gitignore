@@ -7,6 +7,9 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
+# Reproducible (deterministic) trained-weight cache for the tnshapq package
+tnshapq/_cache/
+
 # Environments
 venv/
 .venv/
