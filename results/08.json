@@ -1,0 +1,36 @@
+{
+  "M": 3,
+  "cosine": 1.0,
+  "d": 6,
+  "dataset": "breast_cancer",
+  "enum_evals": 64,
+  "evals": 36,
+  "feature_idx": [
+    2,
+    7,
+    20,
+    22,
+    23,
+    27
+  ],
+  "feature_names": [
+    "mean perimeter",
+    "mean concave points",
+    "worst radius",
+    "worst perimeter",
+    "worst area",
+    "worst concave points"
+  ],
+  "mae": 5.656782483295757e-17,
+  "mae_M2": 7.502330755380682e-07,
+  "mae_by_M": {
+    "1": 0.000768214511841898,
+    "2": 7.502330755380682e-07,
+    "3": 5.656782483295757e-17,
+    "4": 6.064360620298738e-17
+  },
+  "task": "breast-cancer single-RY VQC feature Shapley",
+  "threshold_M": 3,
+  "threshold_ok": true,
+  "train_acc": 0.9173989455184535
+}
