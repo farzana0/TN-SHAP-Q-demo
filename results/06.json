@@ -1,0 +1,22 @@
+{
+  "M": 6,
+  "ablations": {
+    "full": 1.8127755407859858,
+    "init only": 2.220446049250313e-16,
+    "init+cost (drop mixer)": 5.551115123125783e-16,
+    "init+mixer (drop cost)": 2.498001805406602e-16
+  },
+  "enum_evals": 8192,
+  "evals_per_pair": 24,
+  "interaction_ratio": 4.623821922256624,
+  "m": 13,
+  "max_abs_ablation_energy": 5.551115123125783e-16,
+  "max_err": 4.440892098500626e-15,
+  "n_pairs": 78,
+  "sum_first_order": 2.8882641333978105,
+  "sum_interactions": 13.354819017272328,
+  "task": "gate order-2 interactions (qshaptools QAOA, m=13)",
+  "threshold_ok": true,
+  "v_empty": 0.0,
+  "v_full": 1.8127755407859858
+}
