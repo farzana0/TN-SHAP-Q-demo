@@ -19,6 +19,7 @@ players, using $2PM$ evaluations of the extension — versus $2^P$ for exact coa
 |---|---|---|---|
 | [`qlime_vs_tnshapq_features.ipynb`](qlime_vs_tnshapq_features.ipynb) | **input features** | **Q-LIME** (local linear surrogate) | none |
 | [`tnshapq_vs_qshaptools_gates.ipynb`](tnshapq_vs_qshaptools_gates.ipynb) | **circuit gates** | **SVQX** (Heese et al.'s `qshaptools`) | a `qshaptools` clone |
+| [`notebooks/interaction_experiment.ipynb`](notebooks/interaction_experiment.ipynb) | **feature pairs** (order-2) | **exact $2^d$ enumeration** (Grabisch–Roubens) | none |
 
 Each notebook inlines a compact QNN / gate game, exact $2^P$ enumeration (ground truth), and the Owen
 route, so notebook 1 is fully self-contained and notebook 2 needs only the external `qshaptools`
@@ -34,6 +35,9 @@ pip install -r requirements.txt
 
 # Notebook 1 (feature importance) — no external deps:
 jupyter nbconvert --to notebook --execute --inplace qlime_vs_tnshapq_features.ipynb
+
+# Notebook 3 (order-2 feature interactions) — no external deps; regenerates Figure 1:
+jupyter nbconvert --to notebook --execute --inplace notebooks/interaction_experiment.ipynb
 
 # Notebook 2 (gate importance) — clone the reference toolbox first:
 git clone https://github.com/RaoulHeese/qshaptools.git
@@ -73,8 +77,33 @@ TN-SHAP-Q only on the **feature ranking** it induces.
   local-linear *ranking* bias, not a sampling artifact. (Comparing Q-LIME *magnitudes* to Shapley
   values is ill-posed, so we report ranking only.)
 
-Figures: `feature_importance_bars.pdf` (exact vs TN-SHAP-Q), `qlime_vs_tnshapq_ranking.pdf` (Q-LIME
-ranking agreement vs budget), `feature_attribution.pdf` (combined two-panel).
+Figures: `feature_importance_bars.pdf` (exact vs TN-SHAP-Q) and `qlime_vs_tnshapq_ranking.pdf` (Q-LIME
+ranking agreement vs budget). The paper's combined Figure 1 (`feature_attribution.pdf`) is regenerated
+by **notebook 3** below, whose panel (b) is the order-2 interaction validation; run notebook 3 last to
+refresh that file.
+
+---
+
+## Notebook 3 — order-2 feature interactions: TN-SHAP-Q vs exact enumeration
+
+Extends notebook 1 from first-order Shapley values to **pairwise (order-2) Shapley interaction
+indices**, reusing the same trained QNN, the multilinear extension $F$, and the exact $2^d$ value
+table. The interaction index is the diagonal integral of the mixed partial derivative,
+$I(\{i,j\})=\int_0^1 \partial_i\partial_j F(t\mathbf 1)\,dt$, computed two ways:
+
+- **TN-SHAP-Q:** the exact second finite difference of $F$ at the four corners
+  $z_i,z_j\in\{0,1\}$, integrated over the diagonal by $M$-point Gauss–Legendre. Along the diagonal
+  $\partial_i\partial_j F$ has degree $\le d-2$, so $M{=}2$ is exact and $M{=}1$ is not — the order-2
+  analogue of the first-order $M\ge\lceil d/2\rceil$ threshold.
+- **Exact enumeration:** the Grabisch–Roubens pairwise index from the $2^d$ table (ground truth).
+
+All $\binom{4}{2}=6$ pairs agree to **MAE $\sim8\times10^{-17}$** (max $\sim1.5\times10^{-16}$); $M{=}1$
+is inexact and $M{=}2$ reaches machine precision. At $d{=}4$ the $2^d{=}16$-entry table is itself cheap,
+so this is an **exactness check, not an evaluation-count win** — the cost advantage is asymptotic,
+$O(d^2M)$ vs $O(2^d)$ (the same $O(P^2)$ vs $O(2^P)$ scaling as the gate game). The dominant coupling
+is the pair carrying the two largest first-order attributions, a joint term additive attribution cannot
+represent. Regenerates `feature_attribution.pdf` (paper Figure 1): panel (a) first-order exact vs
+TN-SHAP-Q (unchanged), panel (b) the six pairwise interaction indices, exact vs TN-SHAP-Q.
 
 ---
 
