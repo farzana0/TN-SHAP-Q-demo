@@ -1,0 +1,54 @@
+{
+  "all_exact": true,
+  "dims": [
+    4,
+    6,
+    8,
+    10,
+    12
+  ],
+  "max_err_overall": 9.662951862277058e-17,
+  "per_d": [
+    {
+      "M": 2,
+      "d": 4,
+      "enum_evals": 16,
+      "max_err": 8.326672684688674e-17,
+      "owen_evals": 16
+    },
+    {
+      "M": 3,
+      "d": 6,
+      "enum_evals": 64,
+      "max_err": 4.163336342344337e-17,
+      "owen_evals": 36
+    },
+    {
+      "M": 4,
+      "d": 8,
+      "enum_evals": 256,
+      "max_err": 3.3393426912553537e-17,
+      "owen_evals": 64
+    },
+    {
+      "M": 5,
+      "d": 10,
+      "enum_evals": 1024,
+      "max_err": 4.5211230592645535e-17,
+      "owen_evals": 100
+    },
+    {
+      "M": 6,
+      "d": 12,
+      "enum_evals": 4096,
+      "max_err": 9.662951862277058e-17,
+      "owen_evals": 144
+    }
+  ],
+  "qaoa_ref": {
+    "enum_evals": 8192,
+    "m": 13,
+    "owen_evals": 182
+  },
+  "task": "dimension scaling (synthetic single-RY QNNs)"
+}
