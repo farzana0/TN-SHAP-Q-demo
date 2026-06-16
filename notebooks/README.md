@@ -30,8 +30,8 @@ done
 | `03_dimension_scaling.ipynb` | `fig_cost.png` | Fig. 1(b); Prop. *First-order exactness and cost*; §"Dimension scaling" ($d=4,\dots,12$) |
 | `04_shot_noise.ipynb` | `fig_shots.png` | Fig. 1(c); §"Shot-noise robustness" ($\propto 1/\sqrt N$, feature + gate); Hardware realizability |
 | `05_gate_attribution.ipynb` | `fig_gate_first.png` | §"Gate attribution and interactions" (182 vs 8192); cost table (SVQX rows) |
-| `06_gate_interactions.ipynb` | `fig_gate_int.png` | Prop. *Interaction exactness*; §"Gate attribution and interactions" (78 pairs, $M=6$) |
-| `07_qlime_ranking.ipynb` | `fig_qlime.png` | §"Gate attribution and interactions" (Q-LIME ranking sentence); cost table (Q-LIME row) |
+| `06_gate_interactions.ipynb` | `fig_gate_int.png` | Prop. *Interaction exactness*; **Appendix D.2** (order-2 gate interactions, 78 pairs, $M=6$) |
+| `07_qlime_ranking.ipynb` | `fig_qlime.png` | **Appendix D.1** (Q-LIME ranking comparison, ranking-only); cost-table Q-LIME row |
 | `08_benchmark_breast_cancer.ipynb` | `fig_benchmark.png` | §Experiments (stronger, non-toy benchmark) |
 
 The composite paper figure is the three panels `fig_feature.png` (a), `fig_cost.png` (b),
