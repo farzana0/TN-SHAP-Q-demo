@@ -15,6 +15,29 @@ $$\phi_i=\int_0^1 \partial_i F(t\mathbf 1)\,dt,\qquad
 which $M$-point Gauss–Legendre quadrature evaluates **exactly once $M\ge\lceil P/2\rceil$** for $P$
 players, using $2PM$ evaluations of the extension — versus $2^P$ for exact coalition enumeration.
 
+---
+
+## Canonical experiments (one notebook per paper figure)
+
+The reproducible experiments live in [`notebooks/`](notebooks/) as a numbered, self-contained set
+(`01`–`08`), each producing **exactly one paper figure** in [`figures/`](figures/) and writing its
+headline numbers to [`results/`](results/). The shared math (Owen integration, the finite-lift feature
+extension, the gate channel-mixture extension, exact $2^P$ enumeration) lives once in the
+[`tnshapq`](tnshapq/) package — the notebooks import it rather than re-deriving it. See
+[`notebooks/README.md`](notebooks/README.md) for the notebook → figure → paper-reference table.
+
+```bash
+pip install -r requirements.txt
+for nb in notebooks/[0-9][0-9]_*.ipynb; do
+  python -m nbconvert --to notebook --execute --inplace "$nb"   # CPU only, byte-stable
+done
+```
+
+The sections below document the **original exploratory notebooks** (`qlime_vs_tnshapq_features.ipynb`,
+`tnshapq_vs_qshaptools_gates.ipynb`, `notebooks/interaction_experiment.ipynb`,
+`notebooks/gate_interaction_experiment.ipynb`), kept for reference; they are superseded by the
+per-figure set above.
+
 | notebook | players | compared against | external dependency |
 |---|---|---|---|
 | [`qlime_vs_tnshapq_features.ipynb`](qlime_vs_tnshapq_features.ipynb) | **input features** | **Q-LIME** (local linear surrogate) | none |
