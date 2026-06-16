@@ -20,7 +20,10 @@ import os as _os
 
 for _v in ("CUDA_VISIBLE_DEVICES",):
     _os.environ.setdefault(_v, "")
-for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+# Pin every thread pool to one worker: numpy/BLAS (OMP/MKL/OPENBLAS) AND qiskit's Rust
+# accelerators (RAYON). Single-threaded reductions are deterministic to the last bit, so the
+# near-machine-epsilon error values and the figures rendered from them are byte-stable.
+for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "RAYON_NUM_THREADS"):
     _os.environ.setdefault(_v, "1")
 
 from . import datasets, exact, gate_game, metrics, owen, qlime, qnn, svqx  # noqa: E402
