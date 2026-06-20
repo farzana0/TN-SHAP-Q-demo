@@ -115,7 +115,8 @@ def build_qaoa_example(gamma: float = 0.3):
     """Reproduce the qshaptools README circuit (QAOAAnsatz, reps=1, decompose x3).
 
     Returns (qc, H, game) with m = 13 gate players on 3 qubits (energy value function).
-    H is the little-endian SparsePauliOp Z0Z1 + 2 Z0 - 3 Z2 used throughout the repo.
+    H is the qshaptools example, Pauli strings ZZI + 2*ZII - 3*ZIZ (Qiskit little-endian,
+    qubit 0 = rightmost), i.e. the operator Z1 Z2 + 2 Z2 - 3 Z0 Z2.
     """
     H = SparsePauliOp.from_list([("ZZI", 1.0), ("ZII", 2.0), ("ZIZ", -3.0)])
     qc = QAOAAnsatz(cost_operator=H, reps=1)

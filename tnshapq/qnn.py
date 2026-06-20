@@ -72,7 +72,7 @@ class QNN:
             rng = rng or np.random.default_rng()
             counts = sv.sample_counts(shots, qargs=range(self.nq))
             tot = sum(counts.values())
-            z0 = sum((1 if b[::-1][0] == "0" else -1) * c for b, c in counts.items()) / tot
+            z0 = sum((1 if b[0] == "0" else -1) * c for b, c in counts.items()) / tot  # b[0] = highest qubit = self.Z0 support
         return float((1 - z0) / 2)
 
     def predict(self, X, *, shots: Optional[int] = None) -> np.ndarray:

@@ -10,7 +10,7 @@ polynomial in t of degree <= P - |S|.  M-point Gauss-Legendre quadrature is exac
 <= 2M-1, so:
 
   * first order   exact once  M >= ceil(P/2)        ( 2 P M  extension evaluations )
-  * order k       exact once  M >= ceil((P-k+1)/2)  ( 2^k |S| M  evaluations per coalition )
+  * order k       exact once  M >= ceil((P-k+1)/2)  ( 2^k M  evaluations per coalition )
 
 The required quadrature order DECREASES with interaction order.
 
@@ -59,7 +59,7 @@ def threshold_M(P, order=1):
 def query_counts(P, M, order=1):
     """Per-instance evaluation counts for the routes (order = interaction order)."""
     return {
-        "owen": int((2 ** order) * order * M),    # per coalition of size `order`
+        "owen": int((2 ** order) * M),            # 2^k M per coalition of size k (k=order)
         "owen_first_order_total": int(2 * P * M),
         "exact_enumeration": int(2 ** P),
     }
