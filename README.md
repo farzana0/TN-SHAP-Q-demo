@@ -1,7 +1,7 @@
 # TN-SHAP-Q
 
 Exact, query-efficient **Shapley attribution for quantum neural networks (QNNs)** via multilinear
-extensions. This is the public, reproducible companion to the paper
+extensions. This is the public, reproducible code of the paper
 
 > *TN-SHAP-Q: Exact Multilinear Extensions of Quantum Neural Networks for Shapley Attribution of
 > Features and Gates.*
@@ -11,7 +11,7 @@ package that all notebooks import, the generated figures and machine-readable re
 independent calculation audit. Everything runs on CPU (Qiskit statevector, NumPy — no GPU/torch) and
 is byte-stable.
 
-## The idea
+## Multilinear Extension of the circuit components
 
 A single-$R_Y$ QNN is **exactly multilinear** in the lifted features $\phi(x_i)=[1,\cos x_i,\sin x_i]$.
 So when you mask features (or remove gates) against a baseline, **the multilinear extension of the
@@ -67,34 +67,5 @@ for byte-identical output; the `tnshapq` package sets these on import.
 | [`07_qlime_ranking`](notebooks/07_qlime_ranking.ipynb) | `fig_qlime` | **Appendix D.1**, Q-LIME ranking comparison (ranking-only) |
 | [`08_benchmark_breast_cancer`](notebooks/08_benchmark_breast_cancer.ipynb) | `fig_benchmark` | §Experiments, *Feature attribution* (stronger non-toy benchmark) |
 
-The paper's three-panel main figure is `fig_feature` (a) + `fig_cost` (b) + `fig_shots` (c). Every
-quantitative claim in the paper is read mechanically from `results/*.json`.
+The paper's three-panel main figure is `fig_feature` (a) + `fig_cost` (b) + `fig_shots` (c).
 
-## Each notebook
-
-starts with a markdown cell stating what it computes and which figure it produces, pins a fixed seed,
-imports `tnshapq`, ends with a verification cell that asserts machine-precision agreement against
-exact $2^P$ enumeration (`np.testing.assert_allclose`) where exact ground truth exists, and saves its
-figure to `figures/` and headline numbers to `results/`.
-
-## Verification
-
-`results/AUDIT.md` reports an independent recomputation of all eight experiments — exact Shapley by a
-fresh coalition-weighted formula (cross-checked by the permutation average at $d{=}4$),
-Grabisch–Roubens interactions reimplemented from scratch, and all metrics recomputed from raw arrays —
-confirming the thresholds, evaluation counts, and machine-precision exactness (8/8 pass). Regenerate
-it with `python audit.py`.
-
-## References
-
-- **SVQX — quantum gate Shapley values.** R. Heese et al., *Explaining Quantum Circuits with Shapley
-  Values*, arXiv:[2301.09138](https://arxiv.org/abs/2301.09138). Reproduced in notebooks 05–06.
-- **TN-SHAP / TN-SHAP-G — multilinear / tensor-network attribution.** F. Heidari, C. Li, G. Rabusseau,
-  AISTATS 2026, arXiv:[2510.22138](https://arxiv.org/abs/2510.22138); F. Heidari, G. Rabusseau, ICML
-  2026, arXiv:[2606.01540](https://arxiv.org/abs/2606.01540). TN-SHAP-Q is the exact quantum instance.
-- **Q-LIME — local linear QNN explanations.** L. Pira, C. Ferrie, *On the Interpretability of Quantum
-  Neural Networks*, arXiv:[2308.11098](https://arxiv.org/abs/2308.11098). Reproduced in notebook 07.
-- **Encoding structure.** Schuld, Sweke, Meyer, Phys. Rev. A 103, 032430 (2021),
-  arXiv:[2008.08605](https://arxiv.org/abs/2008.08605).
-- **Game theory.** Shapley, *A Value for n-Person Games* (1953); Owen, *Multilinear Extensions of
-  Games*, Manag. Sci. (1972); Grabisch & Roubens, *IJGT* (1999); Harsanyi, *Int. Econ. Rev.* (1963).
