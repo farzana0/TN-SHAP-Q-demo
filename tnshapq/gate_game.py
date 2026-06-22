@@ -109,7 +109,7 @@ class CircuitGame:
 
 
 # --------------------------------------------------------------------------- #
-# The qshaptools README example: QAOA cost H = Z0Z1 + 2 Z0 - 3 Z2
+# The qshaptools README example: QAOA cost H = Z1Z2 + 2 Z2 - 3 Z0Z2
 # --------------------------------------------------------------------------- #
 def build_qaoa_example(gamma: float = 0.3):
     """Reproduce the qshaptools README circuit (QAOAAnsatz, reps=1, decompose x3).
