@@ -22,6 +22,9 @@ Two interpolation regimes implement F(z):
 
 Both are convex mixtures of physical states (hardware-realizable by classical randomization);
 finite-shot estimates make F_hat unbiased and the quadrature a fixed linear combination of them.
+Two unbiased finite-shot estimators are provided: the *_shots routines sample measurement
+outcomes of the exact mixed-state value, while the *_shots_hardware routines realize the
+classical-randomization route (sample input/gate corners, then measure).
 
 Ported / extended from the TN-SHAP-Q verification core
 (verify/owen_integral_shapley.py); the order-2 interaction estimators and the gate
@@ -130,9 +133,46 @@ def owen_integral_shapley(qnn, n, x, baseline, M):
 def owen_integral_shapley_shots(qnn, n, x, baseline, M, shots, rng=None):
     """Finite-shot Owen feature Shapley (Binomial(shots, p)/shots per query).
 
+    This is the measurement-sampling estimator (it samples outcomes of the exact
+    mixed-state value); see owen_integral_shapley_shots_hardware for the
+    classical-randomization corner estimator.
     Returns (phi, n_queries=2 d M, total_shots)."""
     t, w, on, off = precompute_marginal_probs(qnn, n, x, baseline, M)
     phi = shapley_from_probs(on, off, w, shots=shots, rng=rng)
+    n_q = int(2 * n * M)
+    return phi, n_q, int(n_q * shots)
+
+
+def _feature_corner_value(qnn, n, x, baseline, z, shots, rng):
+    """Hardware estimate of F_x(z) by classical randomization: each shot draws a
+    per-feature Bernoulli corner c_j ~ Bernoulli(z_j) (encode x_j if c_j=1 else
+    baseline_j) and takes one projective measurement. The corner state averages to
+    prod_j [(1-z_j) rho(b_j) + z_j rho(x_j)], so the mean is F_x(z); err ~ 1/sqrt(shots)."""
+    x = np.asarray(x, float); baseline = np.asarray(baseline, float)
+    acc = 0.0
+    for _ in range(int(shots)):
+        c = (rng.random(n) < z).astype(int)
+        acc += qnn.prob1(np.where(c == 1, x, baseline), shots=1, rng=rng)
+    return acc / float(shots)
+
+
+def owen_integral_shapley_shots_hardware(qnn, n, x, baseline, M, shots, rng=None):
+    """Finite-shot Owen feature Shapley via the classical-randomization corner
+    estimator (Hardware realizability): each extension value is a Bernoulli mixture
+    over input corners measured projectively, not a Binomial draw on the analytic
+    mixed-state probability. Unbiased for the exact Owen Shapley; err ~ 1/sqrt(shots).
+    Returns (phi, n_evals=2 n M, total_shots)."""
+    rng = rng or np.random.default_rng()
+    t, w = gl_nodes_weights(M)
+    phi = np.zeros(n)
+    for i in range(n):
+        acc = 0.0
+        for tm, wm in zip(t, w):
+            z_on = np.full(n, tm); z_on[i] = 1.0
+            z_off = np.full(n, tm); z_off[i] = 0.0
+            acc += wm * (_feature_corner_value(qnn, n, x, baseline, z_on, shots, rng)
+                         - _feature_corner_value(qnn, n, x, baseline, z_off, shots, rng))
+        phi[i] = acc
     n_q = int(2 * n * M)
     return phi, n_q, int(n_q * shots)
 
@@ -294,6 +334,9 @@ def sample_energy_from_rho(rho_m, H, shots, rng):
 def gate_owen_shapley_shots(game, M, shots, rng=None):
     """Finite-shot Owen gate Shapley: each channel-mixture energy is estimated from `shots`.
 
+    This is the measurement-sampling estimator (it samples outcomes of the exact
+    mixed-state value); see gate_owen_shapley_shots_hardware for the
+    classical-randomization corner estimator.
     Returns (phi, n_evals = 2 m M, total_shots)."""
     rng = rng or np.random.default_rng()
     Us, nq = gate_unitaries(game)
@@ -311,3 +354,36 @@ def gate_owen_shapley_shots(game, M, shots, rng=None):
         phi[j] = acc
     n_q = int(2 * m * M)
     return phi, n_q, int(n_q * shots)
+
+
+def _gate_corner_value(game, z, corners, rng, shots_per_corner=1):
+    """Hardware estimate of F_g(z) by classical randomization: average <H> over
+    `corners` Bernoulli(z) gate coalitions (locked gates always kept), each coalition's
+    energy from `shots_per_corner` projective shots of the actual masked circuit.
+    Unbiased for F_g(z)."""
+    acc = 0.0
+    for _ in range(int(corners)):
+        keep = (rng.random(game.n) < z).astype(int)
+        acc += game.value(keep, shots=shots_per_corner, rng=rng)
+    return acc / float(corners)
+
+
+def gate_owen_shapley_shots_hardware(game, M, corners, rng=None, shots_per_corner=1):
+    """Finite-shot Owen gate Shapley via the classical-randomization corner estimator:
+    each channel-mixture value is realized by sampling gate coalitions and measuring the
+    masked circuit, exactly the Hardware-realizability route. Unbiased for the exact gate
+    Owen Shapley. Returns (phi, n_evals=2 m M, total_shots)."""
+    rng = rng or np.random.default_rng()
+    m = game.n
+    t, w = gl_nodes_weights(M)
+    phi = np.zeros(m)
+    for j in range(m):
+        acc = 0.0
+        for tm, wm in zip(t, w):
+            z_on = np.full(m, tm); z_on[j] = 1.0
+            z_off = np.full(m, tm); z_off[j] = 0.0
+            acc += wm * (_gate_corner_value(game, z_on, corners, rng, shots_per_corner)
+                         - _gate_corner_value(game, z_off, corners, rng, shots_per_corner))
+        phi[j] = acc
+    n_q = int(2 * m * M)
+    return phi, n_q, int(n_q * corners * shots_per_corner)

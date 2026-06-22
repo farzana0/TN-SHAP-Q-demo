@@ -34,8 +34,10 @@ from .exact import (  # noqa: E402
 )
 from .owen import (  # noqa: E402
     gl_nodes_weights, threshold_M, query_counts,
-    owen_integral_shapley, owen_integral_shapley_shots, owen_integral_interactions,
-    gate_owen_shapley, gate_owen_shapley_shots, gate_owen_interactions,
+    owen_integral_shapley, owen_integral_shapley_shots, owen_integral_shapley_shots_hardware,
+    owen_integral_interactions,
+    gate_owen_shapley, gate_owen_shapley_shots, gate_owen_shapley_shots_hardware,
+    gate_owen_interactions,
     gate_extension_value,
 )
 
@@ -44,7 +46,9 @@ __all__ = [
     "QNN", "FeatureGame", "apply_mask", "CircuitGame", "build_qaoa_example",
     "exact_value_table", "exact_shapley", "exact_interactions", "feature_value_table",
     "gl_nodes_weights", "threshold_M", "query_counts",
-    "owen_integral_shapley", "owen_integral_shapley_shots", "owen_integral_interactions",
-    "gate_owen_shapley", "gate_owen_shapley_shots", "gate_owen_interactions",
+    "owen_integral_shapley", "owen_integral_shapley_shots", "owen_integral_shapley_shots_hardware",
+    "owen_integral_interactions",
+    "gate_owen_shapley", "gate_owen_shapley_shots", "gate_owen_shapley_shots_hardware",
+    "gate_owen_interactions",
     "gate_extension_value",
 ]
